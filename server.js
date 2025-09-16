@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const csv = require('csv-parser');
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // Set EJS as the view engine
 app.set('view engine', 'ejs');
@@ -68,7 +68,7 @@ loadCarData().then(() => {
         
         console.log('Received input:', req.body);
 
-        const pythonPath = '/Users/kunjanpandey/Desktop/Projects/CarProject/.venv/bin/python';
+        const pythonPath = 'python3';
 
         const pythonProcess = spawn(pythonPath, [
             'predict.py',
@@ -109,7 +109,7 @@ loadCarData().then(() => {
     });
     
     app.listen(port, () => {
-        console.log(`Server listening on http://localhost:${port}`);
+        console.log(`Server listening on PORT ${port}`);
     });
 }).catch(err => {
     console.error('Server failed to start due to data loading error.');
