@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Price Predictor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #444;
+        }
+        form div {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9f5ff;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Car Price Predictor</h1>
+        <form action="/predict" method="POST">
+            <div>
+                <label for="brand">Brand</label>
+                <select name="brand" id="brand" required>
+                    <option value="" disabled selected>Select a brand</option>
+                    <% if (categories.brands) { %>
+                        <% categories.brands.forEach(brand => { %>
+                            <option value="<%= brand %>"><%= brand %></option>
+                        <% }) %>
+                    <% } %>
+                </select>
+            </div>
+            <div>
+                <label for="model">Model</label>
+                <select name="model" id="model" required>
+                    <option value="" disabled selected>Select a model</option>
+                </select>
+            </div>
+            <div>
+                <label for="kms_driven">Kilometers Driven</label>
+                <input type="number" id="kms_driven" name="kms_driven" required>
+            </div>
+            <div>
+                <label for="year">Year</label>
+                <input type="number" id="year" name="year" required>
+            </div>
+            <div>
+                <label for="fuel_type">Fuel Type</label>
+                <select name="fuel_type" id="fuel_type" required>
+                    <option value="" disabled selected>Select fuel type</option>
+                    <% if (categories.fuel_types) { %>
+                        <% categories.fuel_types.forEach(fuel => { %>
+                            <option value="<%= fuel %>"><%= fuel %></option>
+                        <% }) %>
+                    <% } %>
+                </select>
+            </div>
+            <div>
+                <label for="transmission">Transmission</label>
+                <select name="transmission" id="transmission" required>
+                    <option value="" disabled selected>Select transmission</option>
+                    <% if (categories.transmissions) { %>
+                        <% categories.transmissions.forEach(trans => { %>
+                            <option value="<%= trans %>"><%= trans %></option>
+                        <% }) %>
+                    <% } %>
+                </select>
+            </div>
+            <button type="submit">Predict Price</button>
+        </form>
+
+        <% if (locals.prediction) { %>
+            <div class="result">
+                <p>Predicted Price: ₹ <%= prediction %></p>
+            </div>
+        <% } %>
+    </div>
+    <script>
+        const modelsByBrand = <%- JSON.stringify(modelsByBrand) %>;
+        const brandSelect = document.getElementById('brand');
+        const modelSelect = document.getElementById('model');
+
+        brandSelect.addEventListener('change', () => {
+            const selectedBrand = brandSelect.value;
+            const models = modelsByBrand[selectedBrand] || [];
+
+            // Clear existing model options
+            modelSelect.innerHTML = '<option value="" disabled selected>Select a model</option>';
+
+            // Add new options for the selected brand
+            models.forEach(model => {
+                const option = document.createElement('option');
+                option.value = model;
+                option.textContent = model;
+                modelSelect.appendChild(option);
+            });
+            
+            // Re-enable the model select
+            modelSelect.disabled = false;
+        });
+
+        // Initialize the model select as disabled until a brand is chosen
+        modelSelect.disabled = true;
+    </script>
+</body>
+</html>
